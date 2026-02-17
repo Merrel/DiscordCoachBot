@@ -158,3 +158,41 @@ def start_scheduler(bot_client: discord.Client) -> AsyncIOScheduler:
     )
 
     return scheduler
+
+
+def get_next_checkin_time() -> str:
+    """
+    Get a formatted string of the next scheduled check-in time.
+
+    Returns:
+        Formatted string with next check-in info
+    """
+    from datetime import datetime
+
+    timezone = pytz.timezone(TIMEZONE)
+    now = datetime.now(timezone)
+
+    # Morning check-in at 7:00 AM
+    morning = now.replace(hour=7, minute=0, second=0, microsecond=0)
+    if now > morning:
+        # If past morning time, check tomorrow
+        morning = morning + pytz.timedelta(days=1)
+
+    # Evening check-in at 5:30 PM
+    evening = now.replace(hour=17, minute=30, second=0, microsecond=0)
+    if now > evening:
+        # If past evening time, check tomorrow
+        evening = evening + pytz.timedelta(days=1)
+
+    # Find which is next
+    if morning < evening:
+        next_time = morning
+        check_type = "Morning routine"
+    else:
+        next_time = evening
+        check_type = "Exercise"
+
+    # Format the time
+    time_str = next_time.strftime("%A, %B %d at %I:%M %p %Z")
+
+    return f"**{check_type}** check-in\n{time_str}"
