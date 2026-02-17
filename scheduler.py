@@ -18,7 +18,21 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 load_dotenv()
 
-DISCORD_USER_ID = int(os.getenv('DISCORD_USER_ID'))
+# Validate environment variables
+discord_user_id_str = os.getenv('DISCORD_USER_ID')
+if not discord_user_id_str:
+    raise ValueError(
+        "DISCORD_USER_ID environment variable is not set. "
+        "Please set it in your .env file or Railway environment variables."
+    )
+
+try:
+    DISCORD_USER_ID = int(discord_user_id_str)
+except ValueError:
+    raise ValueError(
+        f"DISCORD_USER_ID must be a valid integer, got: {discord_user_id_str}"
+    )
+
 TIMEZONE = os.getenv('TIMEZONE', 'America/Denver')
 
 
