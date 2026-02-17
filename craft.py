@@ -88,20 +88,27 @@ async def write_to_daily_note(content: str, check_in_type: str) -> bool:
     # Format the content
     formatted_content = format_check_in_content(content, check_in_type)
 
-    # Prepare the API request
-    # Craft API expects blocks in this format
-    block_data = {
-        "type": "textBlock",
-        "content": formatted_content
+    # Prepare the API request using Craft's correct format
+    request_data = {
+        "blocks": [
+            {
+                "type": "text",
+                "markdown": formatted_content
+            }
+        ],
+        "position": {
+            "position": "end",
+            "date": "today"
+        }
     }
 
-    endpoint = f"{CRAFT_API_URL}/daily-notes/today/blocks"
+    endpoint = f"{CRAFT_API_URL}/blocks"
 
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.post(
                 endpoint,
-                json=block_data,
+                json=request_data,
                 headers={"Content-Type": "application/json"}
             )
 
