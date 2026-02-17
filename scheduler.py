@@ -10,6 +10,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 import pytz
 from dotenv import load_dotenv
+from state import set_waiting_for_checkin
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -19,10 +20,6 @@ load_dotenv()
 
 DISCORD_USER_ID = int(os.getenv('DISCORD_USER_ID'))
 TIMEZONE = os.getenv('TIMEZONE', 'America/Denver')
-
-# Import conversation_state from main module
-# We'll access it via the module to share state
-import main as main_module
 
 
 async def send_morning_checkin(bot_client: discord.Client):
@@ -49,8 +46,7 @@ async def send_morning_checkin(bot_client: discord.Client):
         await user.send(message)
 
         # Set conversation state
-        main_module.conversation_state['waiting_for'] = 'morning'
-        main_module.conversation_state['last_check_in_time'] = datetime.now()
+        set_waiting_for_checkin('morning')
 
         logger.info("Morning check-in sent successfully")
 
@@ -89,8 +85,7 @@ async def send_evening_checkin(bot_client: discord.Client):
         await user.send(message)
 
         # Set conversation state
-        main_module.conversation_state['waiting_for'] = 'evening'
-        main_module.conversation_state['last_check_in_time'] = datetime.now()
+        set_waiting_for_checkin('evening')
 
         logger.info("Evening check-in sent successfully")
 
@@ -120,12 +115,13 @@ def start_scheduler(bot_client: discord.Client) -> AsyncIOScheduler:
     scheduler = AsyncIOScheduler(timezone=timezone)
 
     # Schedule morning check-in at 7:00 AM
+    # TEMPORARY TEST: Set to 22:59 for testing
     scheduler.add_job(
         send_morning_checkin,
-        trigger=CronTrigger(hour=7, minute=0, timezone=timezone),
+        trigger=CronTrigger(hour=22, minute=59, timezone=timezone),
         args=[bot_client],
         id='morning_checkin',
-        name='Morning Check-in (7:00 AM)',
+        name='Morning Check-in (TEST at 22:59)',
         replace_existing=True
     )
 

@@ -11,6 +11,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from craft import write_to_daily_note
 from scheduler import start_scheduler
+from state import get_waiting_state, clear_waiting_state
 
 # Configure logging
 logging.basicConfig(
@@ -32,12 +33,6 @@ if not DISCORD_USER_ID:
 
 # Convert user ID to integer
 DISCORD_USER_ID = int(DISCORD_USER_ID)
-
-# Conversation state tracking
-conversation_state = {
-    'waiting_for': None,  # 'morning', 'evening', or None
-    'last_check_in_time': None
-}
 
 
 class CoachBot(discord.Client):
@@ -78,7 +73,8 @@ class CoachBot(discord.Client):
             return
 
         # Check if we're waiting for a response
-        if conversation_state['waiting_for'] is None:
+        check_in_type = get_waiting_state()
+        if check_in_type is None:
             # Not waiting for a check-in response
             logger.info(
                 f"Received message while not waiting for check-in: {message.content[:50]}"
@@ -86,7 +82,6 @@ class CoachBot(discord.Client):
             return
 
         # We have a check-in response
-        check_in_type = conversation_state['waiting_for']
         user_response = message.content
 
         logger.info(f"Received {check_in_type} check-in response from user")
@@ -97,8 +92,7 @@ class CoachBot(discord.Client):
 
             if success:
                 # Clear conversation state
-                conversation_state['waiting_for'] = None
-                conversation_state['last_check_in_time'] = datetime.now()
+                clear_waiting_state()
 
                 # Send confirmation
                 await message.channel.send(
@@ -114,7 +108,7 @@ class CoachBot(discord.Client):
                 logger.error(f"Failed to write {check_in_type} check-in to Craft")
 
                 # Still clear the state so we don't keep trying
-                conversation_state['waiting_for'] = None
+                clear_waiting_state()
 
         except Exception as e:
             logger.error(f"Error processing check-in response: {e}")
@@ -123,7 +117,7 @@ class CoachBot(discord.Client):
                 "Please check the logs."
             )
             # Clear state to prevent getting stuck
-            conversation_state['waiting_for'] = None
+            clear_waiting_state()
 
 
 def main():
