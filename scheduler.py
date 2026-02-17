@@ -167,7 +167,7 @@ def get_next_checkin_time() -> str:
     Returns:
         Formatted string with next check-in info
     """
-    from datetime import datetime
+    from datetime import datetime, timedelta
 
     timezone = pytz.timezone(TIMEZONE)
     now = datetime.now(timezone)
@@ -176,13 +176,13 @@ def get_next_checkin_time() -> str:
     morning = now.replace(hour=7, minute=0, second=0, microsecond=0)
     if now > morning:
         # If past morning time, check tomorrow
-        morning = morning + pytz.timedelta(days=1)
+        morning = morning + timedelta(days=1)
 
     # Evening check-in at 5:30 PM
     evening = now.replace(hour=17, minute=30, second=0, microsecond=0)
     if now > evening:
         # If past evening time, check tomorrow
-        evening = evening + pytz.timedelta(days=1)
+        evening = evening + timedelta(days=1)
 
     # Find which is next
     if morning < evening:
