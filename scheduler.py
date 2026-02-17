@@ -115,13 +115,12 @@ def start_scheduler(bot_client: discord.Client) -> AsyncIOScheduler:
     scheduler = AsyncIOScheduler(timezone=timezone)
 
     # Schedule morning check-in at 7:00 AM
-    # TEMPORARY TEST: Set to 22:59 for testing
     scheduler.add_job(
         send_morning_checkin,
-        trigger=CronTrigger(hour=22, minute=59, timezone=timezone),
+        trigger=CronTrigger(hour=7, minute=0, timezone=timezone),
         args=[bot_client],
         id='morning_checkin',
-        name='Morning Check-in (TEST at 22:59)',
+        name='Morning Check-in (7:00 AM)',
         replace_existing=True
     )
 
