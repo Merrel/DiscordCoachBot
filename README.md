@@ -4,10 +4,20 @@ A Python Discord bot that sends scheduled daily check-ins via DM and writes resp
 
 ## Features
 
+### Scheduled Check-ins
 - **Morning Check-in (7:00 AM)**: Asks about morning routine completion
 - **Evening Check-in (5:30 PM)**: Asks about exercise/workout completion
 - **Craft Integration**: Automatically appends responses to your Craft daily notes
+
+### Interactive Commands
+- **Manual Check-ins**: Trigger check-ins anytime with `/morning` or `/evening`
+- **Status**: Check next scheduled check-in with `/status`
+- **Help**: Get command list with `/help`
+- **Friendly Responses**: Bot responds to greetings and casual messages
+
+### Design
 - **Single-user DM**: Designed for personal use with one specific Discord user
+- **Timezone Aware**: Configure your local timezone for accurate scheduling
 
 ## Prerequisites
 
@@ -211,19 +221,60 @@ Common timezone values:
 
 See [pytz timezones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) for a full list.
 
+## Usage
+
+### Automatic Check-ins
+
+The bot will automatically send you DMs at:
+- **7:00 AM** - Morning routine check-in
+- **5:30 PM** - Exercise check-in
+
+Simply reply to the bot's message with your response, and it will be saved to your Craft daily note.
+
+### Manual Commands
+
+You can trigger check-ins or get information anytime by DMing the bot:
+
+#### Check-in Commands
+- `/morning` - Start a morning routine check-in
+- `/evening` - Start an exercise check-in
+
+#### Information Commands
+- `/status` - See when your next scheduled check-in will be
+- `/help` - Display all available commands
+
+#### Casual Interaction
+The bot also responds to:
+- Greetings: "hi", "hello", "hey"
+- Thanks: "thank you", "thanks"
+- Other messages: Provides helpful guidance
+
+### Example Conversation
+
+```
+You: /morning
+Bot: Good morning! 🌅
+     Did you complete your morning routine today?
+     Please share how it went!
+
+You: Yes! Woke up at 6 AM, did my meditation and journaling.
+Bot: Got it! Added to your Craft daily note ✅
+```
+
 ## Project Structure
 
 ```
 DiscordCoachBot/
 ├── main.py              # Discord bot core and message handling
 ├── scheduler.py         # APScheduler configuration and check-in jobs
-├── craft.py            # Craft API client and formatting logic
-├── requirements.txt    # Python dependencies
-├── .env.example        # Environment variable template
-├── .env               # Your local environment variables (not in git)
-├── .gitignore         # Git ignore rules
-├── Procfile           # Railway deployment configuration
-└── README.md          # This file
+├── craft.py             # Craft API client and formatting logic
+├── state.py             # Shared conversation state management
+├── requirements.txt     # Python dependencies
+├── .env.example         # Environment variable template
+├── .env                 # Your local environment variables (not in git)
+├── .gitignore           # Git ignore rules
+├── Procfile             # Railway deployment configuration
+└── README.md            # This file
 ```
 
 ## How It Works
